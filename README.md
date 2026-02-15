@@ -11,6 +11,7 @@ Facebook/Messenger - Marty Marinov
 
 | Дата       | Тема |
 |------------|------|
-| **18.02.2026** | [Тема 1]() |
+| **18.02.2026** | [Тема 1](https://github.com/Mart0GD/Object-Oriented-Programming-FMI-2026/tree/main/week_01) |
+
 
 
