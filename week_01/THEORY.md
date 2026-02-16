@@ -241,9 +241,74 @@ int main()
 
 #### Нови оператори new и delete
 
+Най-съществената разлика, която ще срещнем е точно тук при заделянето на памет. Вместо добре познатите ни досега malloc/calloc/realloc/free, които ни връщаха void* (без free), в **C++** имаме операторът **new**, който ще ни служи за заделяне на памет и операторът **delete**, който ще ни служи за освобождаване на вече заделената памет. Самите оператори, отдолу използват malloc и free (те са техни обвивки), но затова ще говорим малко по-късно. 
+
+Ще демонстрирам използването им в тези малки примери:
+
+~~~.cpp
+#include <stdexcept>
+#include <iostream>
+
+int main()
+{
+    int* number = allocate_no_value();
+    *number = 10;
+ 
+    int* number_with_value = allocate_with_value(10);
+    int* arr = allocate_array(10);
+
+    // Операторът за заделяне на памет трява да съпада с този за освобождаване
+    // Заделяме един елемент --> delete
+    // Заделяме масив        --> delete[]
+
+    delete arr;
+    delete number_with_value;
+    delete[] arr; 
+}
+
+int* allocate_no_value()
+{
+    // заделяме памет с new. За сега nothrow остава мистерия...
+    int* number = new(std::nothrow) int();
+    if(!number)
+    {
+        std::cerr << "No free memory!";
+        return nullptr;
+    }
+
+   return number;
+}
+
+int* allocate_with_value(int val)
+{
+    // заделяме памет с new и задаваме стойност в скобите
+    int* number = new(std::nothrow) int(val);
+    if(!number)
+    {
+        std::cerr << "No free memory!";
+        return nullptr;
+    }
+
+    return number;
+}
+
+int* allocate_array(int size)
+{
+    // заделяме памет за масив със size елемента. Този път скобите са квадратни
+    int* arr = new(std::nothrow) int[size];
+    if(!number)
+    {
+        std::cerr << "No free memory!";
+        return nullptr;
+    }
+
+    return arr;
+}
+~~~
 
 ### Изборен тип (Enumerations)
 ---
+
 
 
 
