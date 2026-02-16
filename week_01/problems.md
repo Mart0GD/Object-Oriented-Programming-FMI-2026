@@ -90,5 +90,39 @@
     
     #### По желание:
     * Може да рандомизирате командите и нивата на опасност на командите и така, управлението да се симулира само  
-    * Ако не можете да реализирате нещо прескоаете го или го улеснете така, че да можете да си го напишете!  
+    * Ако не можете да реализирате нещо прескоаете го или го улеснете така, че да можете да си го напишете!
+  
+~~~
+Приемрен ход на работа:
+
+DEPLOY Lakeview Hotel DONT_COME_OUT
+Deployed COMMISSIONER to Lakeview Hotel
+
+DEPLOY Toluca Prison DANGE
+Unknown threath level!
+
+DEPLOY Toluca Prison DANGEROUS
+Deployed PATROL_OFFICER to Toluca Prison
+
+COMMISSIONER is back
+
+// още три хода
+PATROL_OFFICER is dead
+
+RECRUIT COMMISSIONER
+Invalid command. Cannot recruit a COMMISSIONER
+
+RECRUIT PATROL_OFFICER
+PATROL_OFFICER recruited
+
+RECRUIT PATROL_OFFICER
+PATROL_OFFICER recruited
+
+RECRUIT PATROL_OFFICER
+PATROL_OFFICER recruited
+
+RECRUIT PATROL_OFFICER
+Recruit limit exceeded!
+~~~
+
 
