@@ -247,7 +247,6 @@ int main()
 
 ~~~.cpp
 #include <stdexcept>
-#include <iostream>
 
 int main()
 {
@@ -308,6 +307,7 @@ int* allocate_array(int size)
 
 ### Изборен тип (Enumerations)
 ---
+
 
 
 
