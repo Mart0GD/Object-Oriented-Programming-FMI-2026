@@ -83,11 +83,11 @@ int main(void){
     struct my_other_struct {
         int val1;
         int val2;
-    } instance{1,2}; // this a correct instance
+    } instance{1,2}; // this a correct declaration + definition + initialization
 
     std::cout << up.x << up.y;
     std::cout << ref_up->x << ref_up->y;
-    std::cout << dynamic_left->x << dynamic_left->y;
+    std::cout << instance.x << instance.y;
 
     delete dynamic_left;
     return 0;
@@ -99,3 +99,4 @@ int main(void){
 ## Битови полета
 
 ## Обединения (Unions)
+
