@@ -30,12 +30,26 @@ int avg(int arr[], int size)
     #error("Crash...");
 #endif
 
+
+enum anum 
+{
+    RED = 2,
+    BLUD = 1,
+    K = 2,
+    p = 2,
+    k = 2,  
+};
+
 int main(void)
 {   
     int arr[] = {1,2,3,4,5};
 
     int a = get_average(arr, 5);
     std::cout << a;
+
+    anum neshto = (anum)2;
+
+    int p = 0;
 
     return 0;
 }
