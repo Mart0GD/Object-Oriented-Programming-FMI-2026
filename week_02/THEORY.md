@@ -405,8 +405,11 @@ struct Student
     unsigned char group;
     bool interrupted;
     bool stateTuition;
+
+    // резултат: ??
 };
 ~~~
+
 
 
 
