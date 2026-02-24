@@ -80,18 +80,54 @@ int main(void){
     vector2  up {0,1};
     vector2* ref_up = &up;
 
+    // Ето тук имаме declaration + definition + initialization
     struct my_other_struct {
         int val1;
         int val2;
-    } instance{1,2}; // this a correct declaration + definition + initialization
+    } *instance = new my_other_struct{1,2}; 
 
     std::cout << up.x << up.y;
     std::cout << ref_up->x << ref_up->y;
-    std::cout << instance.x << instance.y;
+    std::cout << instance->x << instance->y;
 
-    delete dynamic_left;
+    delete instance;
     return 0;
 };
+~~~
+
+## Какви операции можем да извършваме със структури?
+
+- Структурите нямат стандартно дефинирана операция за принтиране (**ще разберем съвсем скоро защо и как можем да го направим**).
+- Структурите не могат да се сведат до bool.
+- Не можем по подразбиране да извършваме аритметични операции със структури.
+
+Обаче можем да присвояваме структури. При тази операция се случва копиране 1:1 или както го наричат на английски shallow copying. Данните се копират дословно, интегралните типове бит по бит, а указателите по адрес, което означва че при копиране **двата указателя сочат на едно и също място!!**.
+
+~~~.cpp
+// Пример за различни операции над структури
+
+struct vector2 {
+    int x;
+    int y;
+};
+
+struct array {
+    int* data;
+    int  size;
+}
+
+int main(void){
+    vector2 up{0,1};
+    vector2 left{0,1};
+
+    vector2 copy = up;  // инициализация с друга структура
+    copy = left;        // присвояване на структура
+
+    vector2* dynamic = new vector2{0,0};
+    vector2
+
+    return 0;
+}
 ~~~
 
 ## Подравняване в паметта
@@ -99,4 +135,5 @@ int main(void){
 ## Битови полета
 
 ## Обединения (Unions)
+
 
