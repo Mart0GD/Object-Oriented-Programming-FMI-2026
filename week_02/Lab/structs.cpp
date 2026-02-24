@@ -19,7 +19,7 @@ const int kMaxNameSize = 50;
 struct Employee {
 	int id{ 0 };
 	char name[kMaxNameSize]{};
-	double salary{ 1000.0 };
+	double salary{ 10000.0 };
 
 	Date hireDate{}; // A struct, can have another struct as a member
 };
@@ -49,7 +49,7 @@ int main() {
 	printTime(randomTime);
 
 	// Struct initialization
-	Date today = { 24, 2, 2025 };
+	Date today = { 24, 2, 2026 };
 
 	std::cout << "Today is ";
 	printDate(today);
