@@ -24,11 +24,6 @@ struct Employee {
 	Date hireDate{}; // A struct, can have another struct as a member
 };
 
-struct Point {
-	int x;
-	int y;
-};
-
 void printDate(const Date& date);
 void printTime(const Time& time);
 
@@ -40,7 +35,7 @@ int main() {
     // Member access
 	birthday.day = 17;
 	birthday.month = 7;
-	birthday.year = 2002;
+	birthday.year = 1956;
 
 	std::cout << "I was born on ";
 	printDate(birthday);
@@ -69,25 +64,15 @@ int main() {
 
 	// Const structs
 	// The members of a const (or constexpr) struct cannot be modified
-	const Date newYear{ 1, 1, 2025 };
+	const Date newYear{ 1, 1, 2026 };
 	// newYear.day = 2; // Error: newYear is const
 
 	// Employee struct
 	Employee employee{ 1, "John Doe", 2000.0, { 1, 1, 2020 } };
 
 	// Passing temporary structs
-	printDate(Date { 23, 3, 2025 });
-	// printDate({ 23, 3, 2025 }); - Struct type can be omitted
-
-	// Returning a struct from a function
-	Point zeroPoint1 = {0,0};
-	Point zeroPoint2{0,0};
-	Point zeroPoint3 = Point{1,2};
-
-	std::cout << "Zero point 1: " << zeroPoint1.x << ", " << zeroPoint1.y << std::endl;
-	std::cout << "Zero point 2: " << zeroPoint2.x << ", " << zeroPoint2.y << std::endl;
-	std::cout << "Zero point 3: " << zeroPoint3.x << ", " << zeroPoint3.y << std::endl;
-
+	printDate(Date { 23, 3, 2027 });
+	printDate({ 23, 3, 2027 }); 		// Struct type can be omitted
 	return 0;
 }
 
