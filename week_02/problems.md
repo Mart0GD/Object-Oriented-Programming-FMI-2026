@@ -44,6 +44,36 @@ void print(const Vector3D& v);
 Направете структура `SquareCollisionComponent` - това ще бъде геометричен квадрат. Пазете четирите му страни.
 Направете структура `CircleCollisionComponent` - това ще бъде окръжност. Пазете центъра и радиуса й.
 
+Имплементирайте следната функционалност за работа със структурите:
+
+~~~.cpp
+
+bool collides(const TriangleCollisionComponent& t, const SquareCollisionComponent& s);
+bool collides(const TriangleCollisionComponent& t, const CircleCollisionComponent& s);
+bool collides(const TriangleCollisionComponent& t, const TriangleCollisionComponent& s);
+
+bool collides(const SquareCollisionComponent& t, const SquareCollisionComponent& s);
+bool collides(const SquareCollisionComponent& t, const CircleCollisionComponent& s);
+bool collides(const SquareCollisionComponent& t, const TriangleCollisionComponent& s);
+
+bool collides(const CircleCollisionComponent& t, const SquareCollisionComponent& s);
+bool collides(const CircleCollisionComponent& t, const CircleCollisionComponent& s);
+bool collides(const CircleCollisionComponent& t, const TriangleCollisionComponent& s);
+
+
+// Проверява дали дадена точка се намира в обекта (помислете как да представите точките?)
+bool   is_inside(<параметри>);
+double distance_between(const Transform2D& pos1, const Transform2D pos2);
+// функции за прочитане от конзолата на всяка една от компонентите. Изберете сами как ще ги представите като вход
+
+// !БОНУС!
+// Създайте структура map, която ще пази всички инстнцирани обекти в нашата игра. Създайте следната функция, която сканира с окръжност около конкретна точка
+// връща броят на обектите в тази област
+
+// функция, която сканира area място около точката за обекти и връща броят им.
+bool collision_check_area(const map& m, <точка>, int area); 
+~~~
+
 За всяка от фигурите считайте, че има Transfor2D и че размерът е лицето на фигурата.
 Game Engine-а все още е много ранна и тайна фаза, затова все още няма истински движещи се обекти.
 
@@ -63,4 +93,5 @@ Game Engine-а все още е много ранна и тайна фаза, з
 
 Пакетът е структура, която съдържа в себе си максимум изображение с големина 16x16, което трябва да се изобрази на екрана.
 Закриптирания текс е последователност от символи, закодирана с шифъра на цезър с отстъп 3 символа.
+
 
