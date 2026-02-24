@@ -321,7 +321,7 @@ struct Student
     unsigned int interrupted     : 1;
     unsigned int stateTuition    : 1;
 
-    // Размер: 22 + 3 + 7 + 2 + 3 + 1 + 1 = 39 + 24 = 63 = 6 байта 
+    // Размер: 4 + 4 + 4 = 12 + 24 = 36
 };
 
 // Пример 1 нагледно
@@ -344,6 +344,7 @@ int main(void){
 ~~~
 
 ## Подравняване в паметта
+
 
 
 
