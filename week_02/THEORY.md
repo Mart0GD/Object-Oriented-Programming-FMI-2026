@@ -408,7 +408,22 @@ struct Student
 
     // резултат: ??
 };
+
+// Пример 5
+  #include <stdint.h>
+
+struct Test
+{
+    uint8_t a;
+    uint32_t b;
+    struct
+    {
+        uint32_t c;
+        uint16_t d;
+    };
+};
 ~~~
+
 
 
 
