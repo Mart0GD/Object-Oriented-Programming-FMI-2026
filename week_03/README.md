@@ -2,5 +2,6 @@
 
 [Lab]()  
 [Problems]()  
-[Lab]()  
+[Theory]()  
+
 
