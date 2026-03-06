@@ -1,0 +1,26 @@
+
+PROGRAM First 
+MOV(a, 10) 
+MOV(d, 5)
+SUB(a, 7)
+MUL(a, d)
+ADD(d, a)
+
+
+
+
+END    
+ADD(d, 4)
+MOV(c, a) 
+
+ PROGRAM       SecondProgram 
+MOV(a, 3)
+MOV(z, 5)
+ADD(3, z)
+END
+
+PROGRAM ThirdProgram
+MOV(a, 3)
+MOV(z, 5)
+ADD(z, 3)
+END
