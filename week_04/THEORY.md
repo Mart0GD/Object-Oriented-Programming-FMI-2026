@@ -113,18 +113,20 @@ int main () {
 #include <iostream>
 #include <fstream>
 
+#include <string.h>
+
 int main() {
 
-    std::fstream s("File.txt", std::ios::binary | std::ios::in | std::ios::out | std::ios::trunc);
-    if(!s.is_open()) return -1;
+    std::fstream stream("File.txt", std::ios::binary | std::ios::in | std::ios::out);
+    if(!stream.is_open()) return -1;
 
     char text[] = "Length is 13";
-    int length = sizeof(text);
+    int length = strlen(text) + 1;
 
-    s.write(reinterpret_cast<const char*>(&length), sizeof(int));
-    s.write(text, length);
+    stream.write(reinterpret_cast<const char*>(&length), sizeof(int));  // записваме размера на низа, за да можем да го прочетем
+    stream.write(text, length);                                         // text е char низ, няма нужда от кастване
 
-    if(!s) {
+    if(!stream) {
         std::cout << "error";
         return -1;
     }
@@ -132,21 +134,22 @@ int main() {
     // какво има във файла
     // |4 байта число|13 байта за низа|
 
+    // прочитаме наново низа
     int size;
-    s.seekg(0, std::ios::beg);
-
-    s.read(reinterpret_cast<char*>(&size), sizeof(size));
-    if(!s) return -1;
+    strean.read(reinterpret_cast<char*>(&size), sizeof(size));
+    if(stream) { std::cout << "error"; return -1; }
 
     char* str = new(std::nothrow) char[size];
-    if(!str) return -1;
+    if(!str) {std::cout << "no memory"; return -1;}
 
-    s.read(str, size);
-    if(!s) return -1;
+    stream.read(str, size);
+    if(!stream) { std::cout << "error"; return -1; }
 
-    delete[] str;
-    s.close();
+    std::cout << strcmp(str, text) << '\n';
 
+    
+    delete[] str; s.close();
     return 0;
 }
 ~~~
+
