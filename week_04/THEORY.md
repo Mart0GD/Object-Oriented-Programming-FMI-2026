@@ -91,7 +91,7 @@ int main(void){
     if(!is.is_open()) return -1;
 
     int number;
-    is.read(reinterpred_cast<char*>(&number), sizeof(number));
+    is.read(reinterpret_cast<char*>(&number), sizeof(number));
     if(!is) return -1;
 
     // Прочетохме 4 байта от файла и ги асоцирахме към паметта на number, не знаем дали прочетохме нещо смислено?
@@ -112,7 +112,7 @@ int main(void){
     if(!os.is_open()) return -1;
 
     int number = 1;
-    os.write(reinterpred_cast<const char*>(&number), sizeof(number));
+    os.write(reinterpret_cast<const char*>(&number), sizeof(number));
 
     // Във файла има записани 4 байта за числото 1
 
@@ -123,7 +123,7 @@ int main(void){
   
 **Лека вметка**
    
-Както виждате се налага да използваме **reinterpred_cast**, който преобразува между два на пръв поглед несъвместими типове. В действителност просто
+Както виждате се налага да използваме **reinterpret_cast**, който преобразува между два на пръв поглед несъвместими типове. В действителност просто
 се оказва на компилатора да интерпретира типа на адреса подаден в кръглите скоби, като типа подаден в ъгловите скоби. Не се извършва абсолютно никаква промяна на данните, като в практиката се използва при преобразуване на типове по указатели, тъй като запазва адреса на първоначалния указател, ето пример:
   
 ~~~.cpp
@@ -134,6 +134,8 @@ int main(void){
   
 ### Четене на блокове от данни 
 
+**Масиви**   
+  
 Понякога ще ни се случва да искаме да запишем някакъв масив или последователност от елементи във файл. За това си задаваме въпроса - веднъж щом ги запиша, как 
 мога да си прочта обратно данните. Отговорът е простичък, ако ще записваме масив, просто ще запишем размерът му преди самият масив, за да знаем колко точно да 
 прочетем.
@@ -146,95 +148,98 @@ int main(void){
 
     int to_write = 3;
     stream.write(reinterpret_cast<const char*>(&to_write), sizeof(int));
-    stream.write(reinterpret_cast<const char*>(arr), 3);
+    stream.write(reinterpret_cast<const char*>(arr), to_write * sizeof(int));
+
+    stream.seekg(0, std::ios::beg); // двата указателя вървят заедно
 
     int size;
     stream.read(reinterpret_cast<char*>(&size), sizeof(int));
 
     int out[size]; // използвам Variable length стеков масив само за пример
-    stream.read(reinterpret_cast<char*>(out), size);
+    stream.read(reinterpret_cast<char*>(out), size * sizeof(int));
 
     stream.close();
     return 0;
 }
 ~~~
 
-~~~.cpp
-// Пример за четене от двоичен файл
-
-#include <iostream>
-#include <fstream>
-
-int main () {
-  streampos size;
-  char * memblock;
-
-  std::ifstream file ("example.bin", ios::in|ios::binary|ios::ate);
-  if (file.is_open())
-  {
-    size = file.tellg();
-    memblock = new(std::nothrow) char [size];
-    if(!memblock) return -1;
-
-    file.seekg (0, ios::beg);
-    file.read (memblock, size);
-    if(!file) { std::cout << "error!; return -1; }
-    file.close();
-
-    cout << "the entire file content is in memory";
-    delete[] memblock;
-  }
-  else cout << "Unable to open file";
-
-  return 0;
-}
-~~~
-
----
+**Структури**  
+  
+След като можем да прочтем масив, вече можем да се замисилм дали можем да запишем/прочетем и структура от двоичен файл? Отговорът е, да можем и то много лесно обаче ако структурата е **plain data** или казано по-просто, няма данни алокирани на heap-а, тъй като при запис във файл ще запишем адресът на указателя към динамичната структура, а тези указатели са само за текущата итерация на нашата програма, ако спрем програмата и опитаме да прочетем данните ще се натъкнем на **segmentation fault**, тъй като този адрес вече няма да пази нашите данни. За това как се справяме с този случай ще видите по-надолу!
 
 ~~~.cpp
-// Пример за записисване и прочитане в двоичен файл
-
-#include <iostream>
 #include <fstream>
+#include <assert.h>
 #include <string.h>
 
-int main() {
+// това е plain data структура, подлежи на директен запис в двоичен файл
+struct student{
+    char name[32]{};
+    int age{};
+    int year{};
+};
 
-    std::fstream stream("File.txt", std::ios::binary | std::ios::in | std::ios::out);
+// тази структура не можем да запишем директно, имаме динамични данни...
+struct cool_student{
+    char* name{}; // --> указател
+    int cool_data{};
+};
+
+std::streampos write_cool_data(cool_student student, std::fstream& stream){
+    std::streampos pos = stream.tellp();
+
+    int name_size = strlen(student.name);
+    stream.write(reinterpret_cast<const char*>(&name_size), sizeof(name_size));
+    stream.write(student.name, name_size);
+    stream.write(reinterpret_cast<const char*>(&student.cool_data), sizeof(int));
+
+    return pos;
+}
+
+bool read_cool_data(cool_student& student, std::fstream& stream, std::streampos pos){
+    assert(!student.name);
+    stream.seekg(pos, std::ios::beg);
+
+    int size;
+    stream.read(reinterpret_cast<char*>(&size), sizeof(int));
+
+    student.name = new(std::nothrow) char[size + 1];
+    if(!student.name) return false;
+
+    stream.read(student.name, size);
+    if(!stream) return false;
+
+    stream.read(reinterpret_cast<char*>(&student.cool_data), sizeof(int));    
+    if(!stream) return false;
+
+    return true;
+}
+
+int main(){
+    std::fstream stream("Data.bin", std::ios::in | std::ios::out | std::ios::binary | std::ios::trunc);
     if(!stream.is_open()) return -1;
 
-    char text[] = "Length is 13";
-    int length = strlen(text) + 1;
+    student pesho = {"Pesho", 10, 2};
+    stream.write(reinterpret_cast<const char*>(&pesho), sizeof(pesho));
+    // записахе | 32 байта низ | 4 байта инт | 4 байта int | + padding (0 в слуачая)
 
-    stream.write(reinterpret_cast<const char*>(&length), sizeof(int));  // записваме размера на низа, за да можем да го прочетем
-    stream.write(text, length);                                         // text е char низ, няма нужда от кастване
+    student to_extract; stream.seekg(0, std::ios::beg);
+    stream.read(reinterpret_cast<char*>(&to_extract), sizeof(student));
 
-    if(!stream) {
-        std::cout << "error";
-        return -1;
-    }
+    // Как записваме структури от втори тип? Трябва да сериализираме на парчета...
+    cool_student cool_pesho;
+    cool_pesho.name = strcpy(new char[32], "Pesho"); 
+    cool_pesho.cool_data = 42;
 
-    // какво има във файла
-    // |4 байта число|13 байта за низа|
+    std::streampos pos = write_cool_data(cool_pesho, stream);
 
-    // прочитаме наново низа
-    int size;
-    stream.read(reinterpret_cast<char*>(&size), sizeof(size));
-    if(stream) { std::cout << "error"; return -1; }
+    cool_student cool_pesho_extract; 
+    read_cool_data(cool_pesho_extract, stream, pos);
 
-    char* str = new(std::nothrow) char[size];
-    if(!str) {std::cout << "no memory"; return -1;}
-
-    stream.read(str, size);
-    if(!stream) { std::cout << "error"; return -1; }
-
-    std::cout << strcmp(str, text) << '\n';
-
-    delete[] str; stream.close();
+    delete[] cool_pesho.name;
+    delete[] cool_pesho_extract.name;
     return 0;
 }
 ~~~
-
 
 
