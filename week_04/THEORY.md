@@ -144,15 +144,17 @@ int main(void){
     std::fstream stream("File.data", std::ios::in | std::ios::out | std::ios::binary);
     if(!stream.is_open()) return -1;
 
-    stream.write(reinterpret_cast<const char*>(&(int){3}), sizeof(int));
+    int to_write = 3;
+    stream.write(reinterpret_cast<const char*>(&to_write), sizeof(int));
     stream.write(reinterpret_cast<const char*>(arr), 3);
 
     int size;
     stream.read(reinterpret_cast<char*>(&size), sizeof(int));
 
-    int arr[size]; // използвам Variable length стеков масив само за пример
-    stream.read(reinterpret_cast<char*>(arr), size);
+    int out[size]; // използвам Variable length стеков масив само за пример
+    stream.read(reinterpret_cast<char*>(out), size);
 
+    stream.close();
     return 0;
 }
 ~~~
@@ -233,5 +235,6 @@ int main() {
     return 0;
 }
 ~~~
+
 
 
