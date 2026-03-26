@@ -313,7 +313,7 @@ class flower{
     // това тук е декларацията на конструктора на класа flower, той отговаря за създаването на валидни обекти от тип flower!
     flower(const char* name, int age, color pot_color);
     
-    char name[32];
+    char* name;
     int age;
     color pot_color;
 
@@ -327,18 +327,34 @@ class flower{
 flower::flower(const char* name, int age, color pot_color)
     : valid(true) // --> това тук е инициализиращият списък на конструктора. Тук можем да зададем стойности на полета, които трябва да си знаят стойността compile time, като константите
 {
-    if(strlen(name) > 31) {
-        valid = false;
-        return;
-    }
-    else if (pot_color == color::UNKNOWN){
+    if (pot_color == color::UNKNOWN || !name){
         valid = false;
         return;
     }
 
-    strcpy(obj.flower_name, name);
+    this->name = new(std::nothrow) char[strlen(name) + 1];
+    if(!this->name){
+        valid = false;
+        return;
+    }
+    
+    strcpy(this->name, name);
     this->age = age;
     this->pot_color = pot_color;
+}
+~~~
+
+**Деструктор**
+
+Деструкторър, досъщ като конструктора е член функция на класа/структурата, която няма тип на връщане и има специално предназначение. Както можете да се досетите деструкторът трябва да свърши обратната работа на конструктора, а именно да зачисти данните и състоянието на обекта.
+
+Деструкторът има почти същата дефиниция като конструктора само че салгаме едно **~** отпред. В случая деструкторът на предишния клас ще бъде:
+
+~~~.cpp
+flower::~flower()
+{
+    delete[] name;
+    name = nullptr;
 }
 ~~~
 
