@@ -652,3 +652,92 @@ int main(){
     return 0;
 };
 ~~~
+
+**Move Assignment Operator**
+
+Това отново е оператор за бинарен присвояване, но тук идеята отново е че обектът в дясно на равенството е RValue reference и трябва да откраднем стойностите му без да копираме каквото и да е. Единствената разлика с Move конструктора е, че този път обектът в ляво е инициализиран и има реални стойностите за член данните, така че ако разменим стойностите на крадеца и "смъртника", когато се извика деструктора на обекта в дясно, той ще зачисти данните не на себе са, а на този, който е бил в ляво.
+
+Ето пример:
+
+~~~.cpp
+// какво става ако има динамични данни
+class Stack{
+public:
+    Stack(int cap = 10)
+        : cap(cap)
+        , tos(0)
+    {
+        data = new int[cap]{};
+    }
+
+    Stack(const Stack& other) = delete;  // за илюстрационна цел
+    Stack(Stack&& other)      = delete;
+
+    Stack& operator = (const Stack& other)
+    {
+        if(this == &other) return *this;
+
+        int* temp = new int[other.cap]{};
+        for (int i = 0; i < other.cap; i++)
+        {
+            temp[i] = other.data[i];
+        }
+         
+        delete[] data;
+        data = temp;
+        cap  = other.cap;
+        tos = other.tos;
+
+        return *this;
+    }
+
+    Stack& operator = (Stack&& other)
+    {
+        if(this == &other) return *this;
+
+        std::swap(data, other.data);
+        std::swap(tos, other.tos);
+        std::swap(cap, other.cap);
+
+        return *this;
+    }
+
+    ~Stack() { delete[] data;}
+
+    void add(int elem)
+    {
+        if(tos == cap) throw std::invalid_argument("Full!");
+        data[tos++] = elem;
+    }
+
+    int remove()
+    {
+        if(tos == 0) throw std::invalid_argument("Empty!");
+        int val = data[tos--];
+        return val;
+    }
+
+private:
+    int* data;
+    int tos, cap;
+};
+
+int main(void){
+    Stack s2;
+    s2.add(2);
+
+    Stack s3;
+    s3.add(10);
+    s3.add(12);
+    s3.add(1000);
+
+    // 1) Стойностите на s2 се прехвърлят на s3
+    // 2) Стойностите на s3 се прехвърлят на s2
+    // 3) Извиква се деструктор на s2 и данните на s3 изчезват! 
+    s3 = std::move(s2);
+
+    // s3 има единствен елемент 2, а s2 е унищожен
+    return 0;
+}
+~~~
+
