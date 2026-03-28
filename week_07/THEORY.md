@@ -440,6 +440,6 @@ void foo(const point&& rvalue_ref);
 
 int main(void)
 {
-
+    foo({1,2});
 }
 ~~~
