@@ -13,7 +13,8 @@
         - [Копиращ оператор за присвояване](#1.4.1)
         - [Move оператор за присвояване](#1.4.2)
     - [The Rule of X](#1.5)
-- [Изключения]() 
+- [Изключения](#2)
+- [Ресурси](#3)
 
 
 <a id="1"></a>
@@ -800,4 +801,15 @@ int main(void){
 
 > **Бележка:** При **Rule of Four and a Half** (Copy-and-Swap), в оператора за присвояване се създава копие на подадения за копиране обект и чрез move конструктора се разменят стойностите на текущия обект и копирания
 
+---
+
+<a id="2"></a>
 ## Изключения
+
+<a id="3"></a>
+## Ресурси 
+
+- https://learn.microsoft.com/en-us/cpp/cpp/constructors-cpp?view=msvc-170
+- https://learn.microsoft.com/en-us/cpp/cpp/assignment?view=msvc-170
+- https://stackoverflow.com/questions/45754226/what-is-the-rule-of-four-and-a-half
+- https://en.cppreference.com/w/cpp/language/member_functions.html#Special_member_functions
