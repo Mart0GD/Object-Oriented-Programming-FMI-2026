@@ -7,8 +7,7 @@ Discord - marto_gd
 Email - marty0545@gmail.com  
 Facebook/Messenger - Marty Marinov  
 
-## Седмичен разпис (датите, както и темите предвидени за тях са нефиксирани)
-
+## Седмичен разпис
 | Дата       | Тема |
 |------------|------|
 | **18.02.2026** | [Преход към C++. Изборен тип](https://github.com/Mart0GD/Object-Oriented-Programming-FMI-2026/tree/main/week_01) |
