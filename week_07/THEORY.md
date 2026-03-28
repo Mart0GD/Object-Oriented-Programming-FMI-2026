@@ -263,19 +263,16 @@ int main(void) {
 
 ~~~.cpp
 #include <string.h>
-#include <new>
+#include <iostream>
 
 class Book {
 public:
     Book() : text(nullptr) {};
     Book(const char* text)
-        : text(nullptr)
     {
-        if(!text) ; // some error...
+        if(!text) std::invalid_argument("Invalid data!");
 
-        this->text = new(std::nothrow) char[strlen(text) + 1];
-        if(!this->text) ; // some error
-
+        this->text = new char[strlen(text) + 1];
         strcpy(this->text, text);
     };    
 
@@ -291,17 +288,23 @@ private:
 
 int main(void){
 
-    Book bible("And there was light!");
-
+    try
     {
-        // Извикване експлицитно на служебен копиращ конструктор 
-        Book necronomicon(bible); 
-    } // --> край на блока, извиква се деструктор на necronomicon
+        Book bible("And there was light!");
 
-    // Какво става тук??
-    // necronomicon изтри данните на bible...
-    // Това изобщо не е желан ефект
+        {
+            // Извикване експлицитно на служебен копиращ конструктор 
+            Book necronomicon(bible); 
+        } // --> край на блока, извиква се деструктор на necronomicon
 
+        // Какво става тук??
+        // necronomicon изтри данните на bible...
+        // Това изобщо не е желан ефект
+    }
+    catch(const std::exception& e)
+    {
+        std::cout << e.what();
+    }
     return 0;
 };
 ~~~
@@ -328,28 +331,23 @@ Circle(Circle& other, int i = 42, string label = "Box");
 
 ~~~.cpp
 #include <string.h>
-#include <new>
+#include<iostream>
 
 class Book {
 public:
     Book() : text(nullptr) {};
     Book(const char* text)
-        : text(nullptr)
     {
-        if(!text) ; // some error...
+        if(!text) throw std::invalid_argument("Invalid data!");
 
-        this->text = new(std::nothrow) char[strlen(text) + 1];
-        if(!this->text) ; // some error
-
+        this->text = new char[strlen(text) + 1];
         strcpy(this->text, text);
     };    
 
     // Дефинираме копиращ конструктор
     Book(const Book& other)
     {
-        text = new(std::nothrow) char[strlen(other.text) + 1];
-        if(!text) ; // some error
-
+        text = new char[strlen(other.text) + 1];
         strcpy(text, text);
     }
 
@@ -369,17 +367,24 @@ private:
 
 int main(void){
 
-    Book bible("And there was light!");
-
+    try
     {
-        // Извикване експлицитно на служебен копиращ конструктор 
-        Book necronomicon(bible); 
-    } // --> край на блока, извиква се деструктор на necronomicon
+        Book bible("And there was light!");
 
-    // Какво става тук??
-    // necronomicon изтри своето собстевно копие на данните на bible
-    // Това вече е желан ефект => Успех!!
+        {
+            // Извикване експлицитно на служебен копиращ конструктор 
+            Book necronomicon(bible); 
+        } // --> край на блока, извиква се деструктор на necronomicon
 
+        // Какво става тук??
+        // necronomicon изтри своето собстевно копие на данните на bible
+        // Това вече е желан ефект => Успех!!
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+    
     return 0;
 };
 ~~~
@@ -558,6 +563,9 @@ public:
         : sex(sex)
         , age(age)
         , name(copy_str(str)) {};
+
+    Person(const Person&)               = delete;
+    Person& operator = (const Person&)  = delete;
 
     ~Person() { delete[] name; } 
 
@@ -740,4 +748,26 @@ int main(void){
     return 0;
 }
 ~~~
+
+## The Rule of X
+
+В C++ през години са появили няколко практики, които ни оказват какво трябва един клас да имплементира и какво не. Най-главното, което ще се изисква от вас е **The Rule of 3**, което гласи, че ако напишете логиката, за кое да е едно от тези три: **Copy Constructor**, **Assignment operator** или **Destructor**, трябва да имате имплементирана или поне изяснена и логиката за останалите две. Може да го запомните по този начин - ако имате динамични данни ще се наложи да имплементирате деструктор, което влече след себе си копиращия конструктор и оператора за присвояване. 
+
+Понякога има случай, когато един обект не може да се копира или не може да си сменя стойността след създаване, но пак да има динамични данни. Тогава имплементирате каквото можете, а другото съответно забранявате с `delete`. Можем да обобщим и останалите правила, за които не споменах, тъй като няма да се изискват от вас, в ето тази табличка:
+
+### Правила за жизнения цикъл на обекти в C++
+
+| Функционалност | Rule of Three | Rule of Five | Rule of Four and a Half |
+| :--- | :---: | :---: | :---: |
+| **Копиращ конструктор** | x | x | x |
+| **Оператор за присвояване** | x | x | x |
+| **Деструктор** | x | x | x |
+| **Move конструктор** | - | x | x |
+| **Move оператор за присвояване** | - | x | - |
+| **Swap функция** | - | - | x |
+
+---
+
+> **Бележка:** При **Rule of Four and a Half** (Copy-and-Swap), в оператора за присвояване се създава копие на подадения за копиране обект и чрез move конструктора се разменят стойностите на текущия обект и копирания
+
 
