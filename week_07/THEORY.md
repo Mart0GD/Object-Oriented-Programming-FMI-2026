@@ -432,14 +432,102 @@ int main(void){
 Ето това е пример за RValue reference:
 
 ~~~.cpp
-struct point {
-    int x, y;
-};
+struct Point { int x, y; };
 
-void foo(const point&& rvalue_ref);
+void foo(Point&& rvalue_ref) {}
 
 int main(void)
 {
+    // Създава се временен обект от тип Point, който не е асоцииран към никаква променлива.
+    // На него му предстои да бъде унищожен след извикването на функцията!  
     foo({1,2});
 }
 ~~~
+
+Както виждате RValue reference означваме с &&, такава ще бъде и сигнатурата на Move конструктора. Целта на този конструктор ще бъда да вземем всички данни от някой обект, на който му предстои да бъде изтрит и да ги запазим в нов обект без да извършваме каквото и да е било копиране. Важна подробност е, че можем да предизвикаме изтриването на обект по всяко време, като използваме една функция от стандартната библиоткеа на име std::move(<object>). Нейната роля е да направи подадения обект RValue reference при подаване във функции.
+
+Ето пример за използване на Move конструктор:
+
+~~~.cpp
+#include <new>
+#include <string.h>
+#include <stdexcept>
+
+class Book{
+public:
+    Book() : author(nullptr), ISBN(nullptr), title(nullptr) {};
+    Book(const char* author, const char* ISBN, const char* title)
+        : Book() // --> делегиране на конструктор с цел валидни стойнсоти на полетата 
+    {
+        if(!set_string(this->author, author) ||
+           !set_string(this->ISBN, ISBN)     ||
+           !set_string(this->title, title))
+        {
+            free();
+            throw std::invalid_argument("Invalid arguments!");
+        }
+    }
+
+    Book(const Book& other) = delete; // не искаме да се копира, за илюстрационни цели
+    Book(Book&& other)
+        : Book() // --> делегиране на конструктор с цел валидни стойнсоти на полетата 
+    {
+        // Тук мога да използвам std::swap, защото делегираният конструктор е направил всяко поле nullptr.
+        // След като излем от конструктора ще се извика деструктора на other и данните му ще се зачистят.
+        // Ако имах неинициализирани адреси, деструктора на other щеше да хвърли segmentation fault!!
+        std::swap(author, other.author);
+        std::swap(ISBN, other.ISBN);
+        std::swap(title, other.title);
+
+        // може и така по ваша преценка 
+        // author = other.author;
+        // ISBN = other.ISBN;
+        // title = other.title;
+
+        // other.author = other.ISBN = other.title = nullptr;
+    }
+
+    ~Book() { free(); }
+
+
+private:
+    static bool set_string(char*& where, const char* what)
+    {
+        if(!what) return false;
+
+        char* temp = new(std::nothrow) char[strlen(what) + 1];
+        if(!temp) return false;
+
+        strcpy(temp, what);
+        delete[] where;
+        where = temp;
+        return true;
+    } 
+
+    void free() { delete[] author; delete[] ISBN; delete[] title; }
+
+    char* author;
+    char* ISBN;
+    char* title;
+};
+
+
+int main(void)
+{
+    Book the_book_of_truth("Unknown", "???", "The Book Of Truth");
+
+    // Извикваме Move конструкотра с std::move
+    Book thief(std::move(the_book_of_truth));
+
+    // След този ред данните на the_book_of_truth са прехвърлени в thief, а всяко поле на the_book_of_truth е затрито, 
+    // обекта е невалиден вече 
+}
+~~~
+
+Служебен Move конструктор се създава за класове, за които не сме дефинирали експлицитно:
+
+- Копиращ конструктор или присвояващ оператор (до него ще стигнем след малко)
+- Move присвояващ оператор (и него ще обясня)
+- Деструктор
+
+Също така ако няма какъвто и да е Move конструкотр, операции които изискват такъв ще използват копиращия конструкотр, ако има такъв...
