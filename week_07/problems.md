@@ -110,7 +110,7 @@
 
 
 
-## Задача 3 (Album Manager)
+## Задача 4 (Album Manager)
 
 ### Клас `Song`
 
@@ -184,7 +184,7 @@
 
 
 
-## Задача 4 (Course Manager)
+## Задача 5 (Course Manager)
 
 ### Клас `Course`
 
