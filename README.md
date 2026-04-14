@@ -16,6 +16,8 @@ Facebook/Messenger - Marty Marinov
 | **13.03.2026** | [Двоични файлове. Работа при пряк достъп.](https://github.com/Mart0GD/Object-Oriented-Programming-FMI-2026/tree/main/week_04) |
 | **20.03.2026** | [Шаблони (templates). Идея, особености, използване. Шаблони на функции.](https://github.com/Mart0GD/Object-Oriented-Programming-FMI-2026/tree/main/week_05) |
 | **27.03.2026** | [Класове - идея, видимост. Членове. Декларация и дефиниция.](https://github.com/Mart0GD/Object-Oriented-Programming-FMI-2026/tree/main/week_06) |
+| **03.04.2026** | [Класове и обекти - жизнен цикъл. Конструктори и деструктори. Инициализация. Изключения.](https://github.com/Mart0GD/Object-Oriented-Programming-FMI-2026/tree/main/week_07) |
+| **07.04.2026** | [Допълнително упражнение](https://github.com/Mart0GD/Object-Oriented-Programming-FMI-2026/tree/main/extra) |
 
 
 
