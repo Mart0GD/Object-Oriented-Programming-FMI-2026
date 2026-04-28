@@ -338,7 +338,7 @@ class Leather_Book : public Book {
 public:
 
     Leather_Book(const char* name, const char* leather_type, int pages, color c)
-        : Book(name, pages)
+        : Book(name, pages) // --> делегиране на конструктор
     {
         /*
             Споменавам отново. При извикване на изключения се извикват деструктори 
@@ -351,7 +351,7 @@ public:
     }
 
     Leather_Book(const Leather_Book& other)
-        : Book(other)
+        : Book(other) // --> делегиране на копиращ конструктор 
     {
         this->leather_type = strcpy(new char[strlen(leather_type) + 1], leather_type);
         this->c = c;
