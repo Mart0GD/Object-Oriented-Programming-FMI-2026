@@ -80,3 +80,144 @@ struct A : <наследена структура> // --> public
 ~~~
 
 Като тези спецификатори описват видимостта на наследените член данни и функции от външния свят. Ето в тази таблица са илюстрирани последствията от всеки тип наследяване 
+
+| Достъп в базовия клас | private наследяване                | protected наследяване              | public наследяване                 |
+|------------------------|-----------------------------------|------------------------------------|------------------------------------|
+| private                | Винаги недостъпен                 | Винаги недостъпен                  | Винаги недостъпен                  |
+| protected              | private в производния клас        | protected в производния клас       | protected в производния клас       |
+| public                 | private в производния клас        | protected в производния клас       | public в производния клас          |
+
+Както виждате имаме точно три начина, по които можем да изберем режима на достъп до член данните и функциите за външният свят от един клас наследник на друг. Съветвам ви да внимавате при дефинициите на вашите класове, не изпускайте думата public ако искате външен достъп за онаследените методи.
+
+Ето едно примерче, което може да онагледи прочетеното до момента.
+
+~~~.cpp
+#include <iostream>
+
+class Foo
+{
+    public:
+    void print_p() { std::cout << "Inside public A"; }
+
+    protected:
+    int a;
+    void print_prt() { std::cout << "Inside protected A"; }
+
+    private:
+    void print_prv() { std::cout << "Inside private A"; }
+};
+
+/*
+    Всеки от следващите наследени класове има достъп до всички член данни
+    които са в public и protected секцията на базовия клас
+
+    Public    данни --> public
+    Protected данни --> protected
+    Private   данни --> private
+*/
+class Dir1 : public Foo {
+public:
+
+    void foo() {
+        Foo::print_p();
+        Foo::print_prt();
+        // A::print_prv(); --> до този нямаме достъп
+        
+        // Може и без scope оператора 
+        print_p();
+        print_prt(); 
+        // print_prv(); --> нямаме достъп
+    }
+};
+
+/*
+    Public    данни --> protected
+    Protected данни --> protected
+    Private   данни --> private
+*/
+class Dir2 : protected Foo {
+public:
+
+    void foo() {
+        Foo::print_p();
+        Foo::print_prt();
+        // A::print_prv(); 
+        
+        print_p();
+        print_prt(); 
+        // print_prv(); 
+    }
+};
+
+/*
+    Public    данни --> private
+    Protected данни --> private
+    Private   данни --> private
+*/
+class Dir3 : private Foo {
+public:
+
+    void foo() {
+        Foo::print_p();
+        Foo::print_prt();
+        // A::print_prv(); 
+
+        print_p();
+        print_prt(); 
+        // print_prv();
+    }
+};
+
+int main(){
+
+    Dir1 a;
+    Dir2 b;
+    Dir3 c;
+
+    // Имаме достъп от Dir1 до публичните функции на Foo
+    a.print_p();
+
+    // Публичните данни на Foo вече са protected за външния свят
+    // b.print_p(); --> невалиден код!
+
+    // Публичните данни на Foo вече са private за външния свят
+    // c.print_p(); --> невалиден код
+
+    return 0;
+}
+~~~
+  
+**Статични функции**
+  
+Важна подробност е, че дори и при **private** наследяване на базов клас може да имаме достъп до публичните статичните член данни и функции, просто не можем да се обръщаме към тях чрез указател а само чрез оператора за принадлежност.
+  
+~~~.cpp  
+#include <iostream>
+
+class Foo {
+public:
+
+    static int  sum (int a, int b) { return a + b; }
+    static void print()            { std::cout << "Inside Foo"; } 
+};
+
+class Dir1 : private Foo {};
+
+class Dir2 : public Dir1 {
+public:
+
+    void Bar()
+    {
+        // this->print(); --> 
+        ::Foo::print();
+    }
+};
+
+int main(){
+
+    Dir2 d;
+    d.Bar();
+
+    return 0;
+}
+~~~
