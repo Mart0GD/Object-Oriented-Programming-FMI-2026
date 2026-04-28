@@ -20,6 +20,10 @@ Facebook/Messenger - Marty Marinov
 | **07.04.2026** | [Допълнително упражнение](https://github.com/Mart0GD/Object-Oriented-Programming-FMI-2026/tree/main/extra) |
 | **17.04.2026** | [Предефиниране на оператори - основни концепции. Бинарни оператори.](https://github.com/Mart0GD/Object-Oriented-Programming-FMI-2026/tree/main/week_08) |
 | **17.04.2026** | [Подготовка за Контролна Работа 1.](https://github.com/Mart0GD/Object-Oriented-Programming-FMI-2026/tree/main/week_09) |
+| **30.04.2026** | [Наследяване. Идея. Основни концепции.](https://github.com/Mart0GD/Object-Oriented-Programming-FMI-2026/tree/main/week_10) |
+
+
+
 
 
 
