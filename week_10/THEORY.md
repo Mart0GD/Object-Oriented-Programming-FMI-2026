@@ -393,3 +393,9 @@ private:
     char* leather_type;
 };
 ~~~
+
+**Източници**
+
+[Microsoft Learn](https://learn.microsoft.com/en-us/cpp/cpp/inheritance-cpp?view=msvc-170)
+[Vishal Chovatiya](https://vishalchovatiya.com/posts/memory-layout-of-cpp-object/)
+
