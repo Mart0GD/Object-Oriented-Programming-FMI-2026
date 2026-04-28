@@ -268,3 +268,128 @@ int main(){
       |       Y::printAll()    |
       |------------------------|
 ~~~
+
+Така с такова представяне в паметта можем да постигнем лесно конвертиране към към базовия тип чрез оператор за преобразуване, но при условието, че ще загубим функционалността на наследения клас, операцията за преобразуване просто ще игнорира крайната част на памета при подаване за копиране.
+
+Ето пример:
+
+~~~.cpp
+struct A {
+    int a;
+    int b;
+};
+
+struct B : public A {
+    int c;
+};
+
+int main(){
+    B first = {1,2,3};
+    A copy = (A)first; // Вземаме само първите 8 байта от first
+}
+~~~
+
+## Жизнен цикъл
+
+Правилата при имплементиране на валиден жизнен цикъл за обекти, обработващи под някаква форма динамични данни си остават същите, с изключение на това, че сега ще трябва да извикваме конструктора/оператора за присовояване на базовия клас, за да може той се създаде. Правилото, което спазваме е, че всеки клас е енкапсулиран и се грижи да менежира своите собствени ресурси. 
+
+В следващото примерче ще видите идеята, как можем да имплементираме коректен жизнен цикъл.
+
+~~~.cpp
+#include <string.h>
+
+class Book {
+public:
+
+    Book(const char* name, int pages)
+        : name(strcpy(new char[strlen(name) + 1], name))
+        , pages(pages) {};
+
+    Book(const Book& other) 
+        : Book(other.name, other.pages) {};
+
+    Book& operator = (const Book& other)
+    {
+        if(this != &other)
+        {
+            char* temp = strcpy(new char[strlen(other.name) + 1], other.name);
+            delete[] name;
+            name = temp;
+            pages = other.pages;
+        }
+
+        return *this;
+    }
+
+    ~Book() { delete[] name; }
+
+private:
+    char* name;
+    int pages;
+};
+
+enum color {
+    RED,
+    BROWN,
+    ORANGE
+};
+
+class Leather_Book : public Book {
+public:
+
+    Leather_Book(const char* name, const char* leather_type, int pages, color c)
+        : Book(name, pages)
+    {
+        /*
+            Споменавам отново. При извикване на изключения се извикват деструктори 
+            на всички инстанцирани обекти в сегашният scope, така че ако горният 
+            делегиран конструктор премине и хвърлим изключение тук, ще бъде извикан деструктор на Book...
+        */
+
+        this->leather_type = strcpy(new char[strlen(leather_type) + 1], leather_type);
+        this->c = c;
+    }
+
+    Leather_Book(const Leather_Book& other)
+        : Book(other)
+    {
+        this->leather_type = strcpy(new char[strlen(leather_type) + 1], leather_type);
+        this->c = c;
+    }
+
+    Leather_Book& operator = (const Leather_Book& other)
+    {
+        if(this != &other)
+        {
+            char* temp = strcpy(new char[strlen(leather_type) + 1], other.leather_type);
+
+            /* 
+            *   Тази операция може да се провали, но Book отговаря сам за данните си.
+            *   Тук нищо не зачистваме
+            */
+            try { Book::operator= (other); }
+            catch(...)
+            {
+                delete[] temp;
+                throw;
+            }
+            
+            delete[] leather_type;
+            leather_type = temp;
+            c = other.c;
+        }
+
+        return *this;
+    } 
+
+    /*
+        Не извикваме деструктора на Book, при изтриване на обект се изтриват
+        данните от долу нагоре, така че от най-долния клас до основния
+    */
+    ~Leather_Book() { delete[] leather_type; }
+
+private:
+    color c;
+    char* leather_type;
+};
+~~~
