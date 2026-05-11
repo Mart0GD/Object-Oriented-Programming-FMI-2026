@@ -489,4 +489,102 @@ private:
 
 Има и друг вариант на проверка. Той представлява подаване на 1-ца в конкретен регистър и вмъкване на if/else проверка в конструкторите на междинните класове с цел runtime пропускане на извикването на базовия клас, но по това което намерих тази опция е по-рядка и става за сложни конструктори, тъй като проверките за истина/лъжа са бавни! 
 
+**Жизнен Цикъл**
 
+Много важна подробност относно жизненият цикъл на виртуално наследен обект е, че операторите за присовяване **НЕ** гарантират единствено изпълнение, което означава, че при не добре написан оператор за присвояване можем да натрупаме множество копирания на данни в базовия клас **Plant**, без дори да се усетим. 
+
+Ето как можем по няколко начина да постигнем работещ ефект.
+
+~~~.cpp
+class SweetPotato : public Potato {
+public:
+    SweetPotato(const char* region, const char* family, float weight, const char* cooking_book_id)
+        : Plant(family, region)
+        , Potato(region, family, weight)
+        , cooking_book_id(copy_str(cooking_book_id)) 
+        {
+            if(!cooking_book_id) throw std::bad_alloc();
+        };
+    
+    SweetPotato(const SweetPotato& other)
+        : Plant(other)
+        , Potato(other)
+        , cooking_book_id(copy_str(other.cooking_book_id))
+    {   
+        if(!cooking_book_id) throw std::bad_alloc();
+    }
+
+    // Подаваме по копие с цел размяна 
+    SweetPotato& operator = (SweetPotato other)
+    {
+        if(this != &other)
+        {
+            /*
+            *   Вариант 1
+            *   Тук силно нарушаваме полиморфизма, тъй като директно разменяме данните,
+            *   но така гарантирам, че няма да има повторни копирания!
+            */
+            std::swap(static_cast<Plant&>(*this), static_cast<Plant&>(other));
+            std::swap(this->meals_cnt, other.meals_cnt);
+            std::swap(this->taste_factor, other.taste_factor);
+            std::swap(this->season, other.season);
+            std::swap(this->weight, other.weight);
+
+            // Нашите данни
+            std::swap(this->cooking_book_id, other.cooking_book_id);
+        }
+
+        return *this;
+    }
+
+    SweetPotato& operator = (const SweetPotato& other)
+    {
+        if(this != &other)
+        {
+            char* temp = new char[strlen(other.cooking_book_id) + 1];
+            strcpy(temp, other.cooking_book_id);
+
+            try
+            {   
+                /*
+                *   Вариант 2
+                *
+                *   Това не е най-ефикасният вариант за жалост...
+                *   Тъй като само конструкторите гарантират единствено извикване на базов такъв
+                *   Операторът за присвояване тук ще копира данните и после пак в Potato и 
+                *   така пак във Vegetable и SeasonalPlant
+                */
+                Plant::operator=(other);
+                Potato::operator=(other);
+            }
+            catch(const std::exception& e)
+            {
+                delete[] temp;
+                throw e;
+            }
+
+            delete[] cooking_book_id;
+            cooking_book_id = temp;
+        }
+
+        return *this;
+    }
+
+    virtual ~SweetPotato() noexcept override { delete[] cooking_book_id; }
+
+private:
+    static char* copy_str(const char* str)
+    {
+        if(!str || *str == '\0') return nullptr;
+
+        char* temp = new(std::nothrow) char[strlen(str) + 1];
+        if(!temp) return nullptr;
+        strcpy(temp, str);
+
+        return temp;
+    }
+
+private:
+    char* cooking_book_id;
+};
+~~~
