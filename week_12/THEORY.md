@@ -588,3 +588,7 @@ private:
     char* cooking_book_id;
 };
 ~~~
+
+---
+
+[Източник] (https://www.usenix.org/legacy/publications/compsystems/1989/fall_stroustrup.pdf)
