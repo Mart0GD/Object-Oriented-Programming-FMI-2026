@@ -24,7 +24,7 @@ Facebook/Messenger - Marty Marinov
 | **08.05.2026** | [Виртуални методи и полиморфизъм. Абстрактни класове.](https://github.com/Mart0GD/Object-Oriented-Programming-FMI-2026/tree/main/week_11) |
 | **11.05.2026** | [Множествено наследяване. Виртуални базови класове.](https://github.com/Mart0GD/Object-Oriented-Programming-FMI-2026/tree/main/week_12)|
 | **22.05.2026** | [Шаблони на класове. Особености. Шаблони при влагане и наследяване. Нетипови шаблонни параметри.](https://github.com/Mart0GD/Object-Oriented-Programming-FMI-2026/tree/main/week_13)|
-| **29.05.2026**|  [Подготовка за контролно практикум][https://github.com/Mart0GD/Object-Oriented-Programming-FMI-2026/tree/main/week_14]|
+| **29.05.2026**|  [Подготовка за контролно практикум](https://github.com/Mart0GD/Object-Oriented-Programming-FMI-2026/tree/main/week_14)|
 
 
 
